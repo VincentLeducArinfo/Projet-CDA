@@ -1,0 +1,18 @@
+# Exclure les dépendances (seront installées dans le conteneur)
+vendor/
+
+# Exclure le cache et les logs
+var/
+
+# Exclure les fichiers de configuration locale
+.env.local
+.env.*.local
+
+# Exclure les tests (inutiles en production)
+tests/
+
+# Exclure les fichiers système
+node_modules/
+.git/
+.gitignore
+*.md

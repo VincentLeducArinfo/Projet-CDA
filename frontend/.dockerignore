@@ -1,0 +1,17 @@
+# Exclure les dépendances (seront installées dans le conteneur)
+node_modules/
+
+# Exclure les fichiers buildés
+dist/
+
+# Exclure les fichiers système
+.git/
+.gitignore
+*.md
+
+# Exclure les tests et couverture
+tests/
+coverage/
+
+# Exclure les fichiers de configuration locale
+.env.local
