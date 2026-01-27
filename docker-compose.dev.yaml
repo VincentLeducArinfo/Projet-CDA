@@ -7,6 +7,8 @@ services:
       MYSQL_DATABASE: missioncontrol
       MYSQL_USER: missioncontrol
       MYSQL_PASSWORD: missioncontrol
+    ports:
+      - 3306:3306
     volumes:
       - mysql_dev_data:/var/lib/mysql
     networks:
