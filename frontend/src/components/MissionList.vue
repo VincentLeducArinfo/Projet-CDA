@@ -10,7 +10,7 @@
         <p v-else-if="error">{{ error }}</p>
 
         <div class="flex flex-row flex-wrap justify-center">
-            <div v-for="mission in missions" :key="mission.id" class="px-5 py-10 bg-mission-control-blue text-white rounded-xl mx-5 my-10 w-1/4 divide-x-2 flex flex-row items-center">
+            <div v-for="mission in missions" :key="mission.id" class="px-5 py-10 bg-missioncontrol-blue text-white rounded-xl mx-5 my-10 w-1/5 divide-x-2 flex flex-row items-center">
                 <h3 class="pr-3">{{ mission.name }}</h3>
                 <h3 class="pl-3">En attente de décollage</h3>
             </div>
