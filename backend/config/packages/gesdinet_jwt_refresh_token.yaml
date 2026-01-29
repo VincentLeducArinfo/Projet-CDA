@@ -1,0 +1,21 @@
+gesdinet_jwt_refresh_token:
+    refresh_token_class: App\Entity\RefreshToken
+
+    # Durée de vie du refresh token (7 jours)
+    ttl: 604800
+
+    # Mise à jour automatique de la date d'expiration à chaque utilisation
+    # false pour implémenter la rotation stricte des tokens
+    ttl_update: false
+
+    # Firewall utilisé pour l'authentification
+    #firewall: main
+
+    # Configuration du cookie HttpOnly
+    cookie:
+        enabled: true
+        #name: refresh_token
+        same_site: strict
+        secure: true
+        http_only: true
+        path: /
