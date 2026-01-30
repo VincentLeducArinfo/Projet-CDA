@@ -24,8 +24,16 @@ security:
         refresh:
             pattern: ^/api/token/refresh
             stateless: true
+            provider: users
             # Pas d'authentification requise pour le refresh
             # (le refresh token dans le cookie suffit)
+
+            refresh_jwt: 
+                check_path: /api/token/refresh
+        
+        api:
+            logout:
+                path: api_token_invalidate
 
         main:
             stateless: true

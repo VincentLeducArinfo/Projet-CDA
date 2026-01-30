@@ -8,13 +8,9 @@ gesdinet_jwt_refresh_token:
     # false pour implémenter la rotation stricte des tokens
     ttl_update: false
 
-    # Firewall utilisé pour l'authentification
-    #firewall: main
-
     # Configuration du cookie HttpOnly
     cookie:
         enabled: true
-        #name: refresh_token
         same_site: strict
         secure: true
         http_only: true
