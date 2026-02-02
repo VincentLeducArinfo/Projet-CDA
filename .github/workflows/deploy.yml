@@ -1,0 +1,119 @@
+name: CI/CD Mission Control Production
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: missioncontrol_test
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_mysql, zip, intl, opcache
+          coverage: none
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+          
+      - name: Install Backend Dependencies
+        working-directory: ./backend
+        run: composer install --no-interaction --prefer-dist --no-scripts
+        
+      - name: Configure Backend for Tests
+        working-directory: ./backend
+        run: |
+          sed -i 's|root@127|root:root@127|' .env.test
+          
+          mkdir -p config/jwt/test
+          openssl genpkey -out config/jwt/test/private.pem -aes256 -algorithm rsa -pkeyopt rsa_keygen_bits:4096 -pass pass:test_passphrase
+          openssl pkey -in config/jwt/test/private.pem -passin pass:test_passphrase -out config/jwt/test/public.pem -pubout
+          chmod 600 config/jwt/test/private.pem
+          chmod 644 config/jwt/test/public.pem
+          
+          php bin/console doctrine:database:create --env=test --if-not-exists
+          php bin/console doctrine:migrations:migrate --env=test --no-interaction
+          php bin/console doctrine:fixtures:load --no-interaction --env=test
+
+          php bin/console cache:clear --env=test
+        
+      - name: Run Backend Tests
+        working-directory: ./backend
+        run: php bin/phpunit
+        
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend
+        run: npm ci
+        
+      - name: Run Frontend Unit Tests
+        working-directory: ./frontend
+        run: npm run test
+        
+      - name: Build Frontend
+        working-directory: ./frontend
+        run: npm run build
+        
+      # - name: Install Playwright Browsers
+      #   working-directory: ./frontend
+      #   run: npx playwright install --with-deps chromium
+        
+      # - name: Run E2E Tests
+      #   working-directory: ./frontend
+      #   run: npx playwright test
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+      - name: Deploy to Production Server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          # password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            set -e
+
+            cd ${{ secrets.DEPLOY_PATH }}
+            
+            echo "Pulling latest changes..."
+            git pull origin main
+            
+            echo "Building and restarting containers..."
+            docker compose down
+            docker compose build --no-cache
+            docker compose up -d
+            
+            echo "Waiting for containers..."
+            sleep 30
+
+            docker image prune -f
+            
+            echo "Deployment completed!"
+            docker compose ps
