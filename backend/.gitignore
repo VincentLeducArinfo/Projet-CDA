@@ -7,6 +7,5 @@
 /vendor/
 /phpunit.xml
 /.phpunit.cache/
-/.env
 /.env.dev
 /config/jwt/*.pem
