@@ -57,7 +57,7 @@ export async function logout() {
         token: accessToken
     }
 
-    const response = await api.post('/token/invalidate', data);
+    const response = await api.post('/logout', data);
     console.log(response.data);
 
     // Sinon, simplement effacer l'état local suffit

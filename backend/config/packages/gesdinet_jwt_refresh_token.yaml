@@ -1,4 +1,5 @@
 gesdinet_jwt_refresh_token:
+
     refresh_token_class: App\Entity\RefreshToken
 
     # Durée de vie du refresh token (7 jours)
