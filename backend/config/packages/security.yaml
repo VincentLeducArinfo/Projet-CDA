@@ -19,6 +19,18 @@ security:
         dev:
             pattern: ^/_(profiler|wdt)
             security: false
+
+        # Endpoint de refresh (doit être avant 'main')
+        refresh:
+            pattern: ^/api/token/refresh
+            stateless: true
+            provider: users
+            # Pas d'authentification requise pour le refresh
+            # (le refresh token dans le cookie suffit)
+
+            refresh_jwt: 
+                check_path: /api/token/refresh
+
         main:
             stateless: true
             provider: users
@@ -30,7 +42,9 @@ security:
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
             jwt: ~
 
+
     access_control:
+        - { path: ^/api/token/invalidate, roles: PUBLIC_ACCESS }
         - { path: ^/api, roles: PUBLIC_ACCESS } # Allows accessing the Swagger UI
         - { path: ^/docs, roles: PUBLIC_ACCESS } # Allows accessing the Swagger UI docs
         - { path: ^/contexts, roles: PUBLIC_ACCESS } # Allows accessing the Swagger UI contexts
