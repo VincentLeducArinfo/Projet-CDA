@@ -2,15 +2,17 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { useAuth } from '@/composables/useAuth';
 import MissionListView from "@/views/MissionListView.vue";
 import LoginView from '@/views/LoginView.vue';
+import MissionFormView from '@/views/MissionFormView.vue';
 
 const routes = [
-    { path: "/login", name: "login", component: LoginView, meta: { requiresGuest: true } },
-    { path: "/", name: "missions", component: MissionListView, meta: { requiresAuth: true } },
+  { path: "/login", name: "login", component: LoginView, meta: { requiresGuest: true } },
+  { path: "/", name: "missions", component: MissionListView, meta: { requiresAuth: true } },
+  { path: "/new-mission", name: "new-mission", component: MissionFormView, meta: { requiresAuth: true } }
 ];
 
 const router = createRouter({
-    history: createWebHistory(),
-    routes
+  history: createWebHistory(),
+  routes
 });
 
 /**
@@ -21,7 +23,7 @@ const router = createRouter({
  */
 let isInit = false;
 
-router.beforeEach( async(to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const { isAuthenticated, refresh } = useAuth();
 
   if (!isInit) {

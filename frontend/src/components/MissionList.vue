@@ -10,7 +10,14 @@
         <p v-else-if="error">{{ error }}</p>
 
         <div class="flex flex-row flex-wrap justify-center">
-            <div v-for="mission in missions" :key="mission.id" class="px-5 py-10 bg-missioncontrol-blue text-white rounded-xl mx-5 my-10 w-1/5 divide-x-2 flex flex-row items-center">
+            <router-link :to='{ name: "new-mission" }'
+                class="flex flex-row items-center bg-missioncontrol-blue text-white text-xl mx-4 my-5 px-5 py-10 rounded-xl hover:bg-green-600">
+                <Plus size="100" stroke-width="3" />
+                <h2 class="font-bold">Créer une nouvelle mission</h2>
+            </router-link>
+
+            <div v-for="mission in missions" :key="mission.id"
+                class="px-5 py-10 bg-missioncontrol-blue text-white rounded-xl mx-5 my-10 w-1/5 divide-x-2 flex flex-row items-center">
                 <h3 class="pr-3">{{ mission.name }}</h3>
                 <h3 class="pl-3">En attente de décollage</h3>
             </div>
@@ -22,6 +29,7 @@
 import { computed, onMounted, ref } from 'vue';
 
 import { useMissions } from '@/composables/useMissions';
+import { Plus } from 'lucide-vue-next';
 
 const { missions, error, loading, status, fetchMissions } = useMissions();
 
